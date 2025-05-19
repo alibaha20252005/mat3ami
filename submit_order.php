@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 // إعداد الاتصال بقاعدة البيانات
 $host = "localhost";
 $user = "root";
@@ -10,7 +13,7 @@ $conn = new mysqli($host, $user, $password, $dbname);
 // تحقق من الاتصال
 if ($conn->connect_error) {
     http_response_code(500);
-    echo json_encode(["message" => "فشل الاتصال بقاعدة البيانات"]);
+    echo json_encode(["message" => "فشل الاتصال بقاعدة البيانات: " . $conn->connect_error]);
     exit;
 }
 
@@ -22,7 +25,7 @@ $required_fields = ['full_name', 'address', 'phone', 'payment_method', 'cart'];
 foreach ($required_fields as $field) {
     if (empty($data[$field])) {
         http_response_code(400);
-        echo json_encode(["message" => "الرجاء ملء جميع الحقول المطلوبة"]);
+        echo json_encode(["message" => "الرجاء ملء جميع الحقول المطلوبة: $field"]);
         exit;
     }
 }
@@ -35,8 +38,17 @@ if (!is_array($data['cart']) || count($data['cart']) === 0) {
 
 // 1. إضافة الزبون
 $stmt = $conn->prepare("INSERT INTO customers (full_name, address, phone, payment_method) VALUES (?, ?, ?, ?)");
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(["message" => "فشل تحضير استعلام إضافة الزبون: " . $conn->error]);
+    exit;
+}
 $stmt->bind_param("ssss", $data['full_name'], $data['address'], $data['phone'], $data['payment_method']);
-$stmt->execute();
+if (!$stmt->execute()) {
+    http_response_code(500);
+    echo json_encode(["message" => "فشل تنفيذ استعلام إضافة الزبون: " . $stmt->error]);
+    exit;
+}
 $customer_id = $stmt->insert_id;
 $stmt->close();
 
@@ -49,17 +61,35 @@ foreach ($data['cart'] as $item) {
 
 // 3. إنشاء الطلب
 $stmt = $conn->prepare("INSERT INTO orders (customer_id, total_price) VALUES (?, ?)");
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(["message" => "فشل تحضير استعلام إنشاء الطلب: " . $conn->error]);
+    exit;
+}
 $stmt->bind_param("id", $customer_id, $total_price);
-$stmt->execute();
+if (!$stmt->execute()) {
+    http_response_code(500);
+    echo json_encode(["message" => "فشل تنفيذ استعلام إنشاء الطلب: " . $stmt->error]);
+    exit;
+}
 $order_id = $stmt->insert_id;
 $stmt->close();
 
 // 4. إدخال تفاصيل العناصر
 $stmt = $conn->prepare("INSERT INTO order_items (order_id, item_name, price, quantity) VALUES (?, ?, ?, ?)");
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(["message" => "فشل تحضير استعلام إضافة عناصر الطلب: " . $conn->error]);
+    exit;
+}
 foreach ($data['cart'] as $item) {
     if (!isset($item['name'], $item['price'], $item['quantity'])) continue;
     $stmt->bind_param("isdi", $order_id, $item['name'], $item['price'], $item['quantity']);
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        http_response_code(500);
+        echo json_encode(["message" => "فشل تنفيذ استعلام إضافة عنصر: " . $stmt->error]);
+        exit;
+    }
 }
 $stmt->close();
 
