@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>قائمة الطعام - مطعمي</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="glass-header">
+    <div class="logo">SNACK STOP</div>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="menu.html">القائمة</a>
+      <a href="cart.html">طلباتي</a>
+    </nav>
+  </header>
+
+  <section class="featured">
+    <h2>كل الأصناف المتوفرة</h2>
+    <div class="dishes">
+      <div class="dish-card">
+        <img src="images/burger.jpg" alt="برغر فاخر" />
+        <h3>برغر فاخر</h3>
+        <p>250 دج</p>
+        <button onclick="addToCart('برغر فاخر', 250)">أضف إلى الطلب</button>
+      </div>
+      <div class="dish-card">
+        <img src="images/pizza.jpg" alt="بيتزا جبنة" />
+        <h3>بيتزا جبنة</h3>
+        <p>250 دج</p>
+        <button onclick="addToCart('بيتزا جبنة', 250)">أضف إلى الطلب</button>
+      </div>
+      <div class="dish-card">
+        <img src="images/salad.jpg" alt="سلطة خضراء" />
+        <h3>سلطة خضراء</h3>
+        <p>250 دج</p>
+        <button onclick="addToCart('سلطة خضراء', 250)">أضف إلى الطلب</button>
+      </div>
+      <div class="dish-card">
+        <img src="images/fries.jpg" alt="بطاطا مقلية" />
+        <h3>بطاطا مقلية</h3>
+        <p>250 دج</p>
+        <button onclick="addToCart('بطاطا مقلية', 250)">أضف إلى الطلب</button>
+      </div>
+      
+       <div class="dish-card">
+        <img src="images/jus cocktail.jpg" alt="عصير كوكتال" />
+        <h3>عصير كوكتال</h3>
+        <p>100 دج</p>
+        <button onclick="addToCart('عصير كوكتال', 100)">أضف إلى الطلب</button>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 SNACK STOP - جميع الحقوق محفوظة</p>
+  </footer>
+</body>
+</html>
